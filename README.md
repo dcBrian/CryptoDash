@@ -1,6 +1,8 @@
-## Cryptodash :dart:
+## Cryptodash
 
 This is a Cryptocurrency Dashboard I made using Reactjs to showcase some of my knowledge. It includes LocalStorage and React Context API for State Management, Styled-components and CryptoCompare API for Real Pricing Data.
+
+Fetching the data from CryptoCompare API CAN be slow. Please wait a few seconds.
 <br />
 
 <p align="center">
