@@ -36,6 +36,7 @@ export default function HighchartsConfig(historical) {
                 {
                     condition: {
                         maxWidth: 500,
+                        width: "100%",
                     },
                     chartOptions: {
                         legend: {
