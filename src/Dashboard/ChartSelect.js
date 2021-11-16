@@ -7,7 +7,9 @@ const ChartSelectStyled = styled.select`
     color:#1163c9;
     border: 1px solid;
     margin: 5px;
-    float: right;
+    position: absolute;
+    right: 10px;
+    z-index: 2;
 `;
 
 export default ChartSelectStyled;

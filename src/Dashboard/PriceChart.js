@@ -12,7 +12,7 @@ export default function PriceChart({ topSection }) {
     return (
         <AppContext.Consumer>
             {({ historical, changeChartSelect }) => (
-                <Tile>
+                <Tile style={{ position: "relative" }}>
                     <ChartSelectStyled
                         defaultValue='months'
                         onChange={(e) => changeChartSelect(e.target.value)}
