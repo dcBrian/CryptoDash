@@ -1,10 +1,8 @@
 import React from "react";
-import Page from "../Shared/Page";
 import { Tile } from "../Shared/Tile";
-import PriceGrid from "./PriceGrid";
 import { AppContext } from "../App/AppProvider";
 import CoinImage from "../Shared/CoinImage";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 const SpotlightName = styled.h2`
     text-align: center;

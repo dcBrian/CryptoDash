@@ -3,12 +3,12 @@ import styled, { css } from "styled-components";
 
 const CoinImageStyled = styled.img`
     height: 50px;
+    margin: auto;
+    display: block;
     ${(props) =>
         props.spotlight &&
         css`
             height: 200px;
-            margin: auto;
-            display: block;
         `}
 `;
 

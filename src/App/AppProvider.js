@@ -1,16 +1,20 @@
 import React from "react";
 import _ from "lodash";
+import moment from "moment";
 const cc = require("cryptocompare");
 cc.setApiKey("28ea682f930131774c17125e08a7398dac5661f80aefbd82a81cf471274e50c2");
 export const AppContext = React.createContext();
 const MAX_FAVORITES = 10;
+const TIME_UNIT = 10;
+
 class AppProvider extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            page: "settings",
+            page: "dashboard",
             favorites: ["BTC", "XMR", "DOGE", "ETH"],
             ...this.saveSettings(),
+            timeInterval: "months",
             setPage: this.setPage,
             addCoin: this.addCoin,
             removeCoin: this.removeCoin,
@@ -18,12 +22,14 @@ class AppProvider extends React.Component {
             setCurrentFavorite: this.setCurrentFavorite,
             confirmFavorites: this.confirmFavorites,
             setFilteredCoins: this.setFilteredCoins,
+            changeChartSelect: this.changeChartSelect,
         };
     }
 
     componentDidMount() {
         this.fetchCoins();
         this.fetchPrices();
+        this.fetchHistorical();
     }
 
     fetchCoins = async () => {
@@ -38,6 +44,24 @@ class AppProvider extends React.Component {
         this.setState({ prices });
     };
 
+    fetchHistorical = async () => {
+        if (this.state.firstVisit) return;
+        let results = await this.historical();
+
+        let historical = [
+            {
+                name: this.state.currentFavorite,
+                data: results.map((el, i) => [
+                    moment()
+                        .subtract({ [this.state.timeInterval]: TIME_UNIT - i })
+                        .valueOf(),
+                    el.USD,
+                ]),
+            },
+        ];
+        this.setState({ historical });
+    };
+
     prices = async () => {
         let res = [];
         for (let i = 0; i < this.state.favorites.length; i++) {
@@ -49,6 +73,24 @@ class AppProvider extends React.Component {
             }
         }
         return res;
+    };
+
+    historical = () => {
+        //Compiling an array of promises
+        let promises = [];
+
+        for (let units = TIME_UNIT; units > 0; units--) {
+            promises.push(
+                cc.priceHistorical(
+                    this.state.currentFavorite,
+                    ["USD"],
+                    moment()
+                        .subtract({ [this.state.timeInterval]: units })
+                        .toDate()
+                )
+            );
+        }
+        return Promise.all(promises);
     };
 
     addCoin = (key) => {
@@ -73,9 +115,12 @@ class AppProvider extends React.Component {
                 page: "dashboard",
                 firstVisit: false,
                 currentFavorite: currentFavorite,
+                prices: null,
+                historical: null,
             },
             () => {
                 this.fetchPrices();
+                this.fetchHistorical();
             }
         );
         localStorage.setItem(
@@ -88,8 +133,7 @@ class AppProvider extends React.Component {
     };
 
     setCurrentFavorite = (sym) => {
-        console.log("ok");
-        this.setState({ currentFavorite: sym });
+        this.setState({ currentFavorite: sym, historical: null }, this.fetchHistorical);
         localStorage.setItem(
             "cryptoDash",
             JSON.stringify({
@@ -101,6 +145,7 @@ class AppProvider extends React.Component {
 
     saveSettings() {
         let cryptoDash = JSON.parse(localStorage.getItem("cryptoDash"));
+
         if (!cryptoDash) {
             return { page: "settings", firstVisit: true };
         }
@@ -111,6 +156,10 @@ class AppProvider extends React.Component {
     setPage = (page) => this.setState({ page });
 
     setFilteredCoins = (filteredCoins) => this.setState({ filteredCoins });
+
+    changeChartSelect = (value) => {
+        this.setState({ timeInterval: value, historical: null }, this.fetchHistorical);
+    };
 
     render() {
         return <AppContext.Provider value={this.state}>{this.props.children}</AppContext.Provider>;
