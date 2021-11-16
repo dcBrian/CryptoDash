@@ -17,6 +17,10 @@ Fetching the data from CryptoCompare API CAN be slow. Please wait a few seconds.
 
 ![CryptoDash](/images/cryptodash.png?raw=true)
 
+## Todo
+
+* [ ] Fix HighChart responsiveness
+
 ## Features
 
 -   Settings Page
